@@ -1,0 +1,21 @@
+---
+- name: Assert that we are not logged in as root
+  assert:
+    that:
+      - ansible_user_id != 'root'
+    fail_msg: "Podman containers are rootless, so please do not run this role as root."
+
+# TODO
+#- name: Assert that a secrets are configured.
+#  assert:
+#    that:
+#      - wikijs_data_dir != ''
+#    fail_msg: "Please set wikijs_data_dir to a valid directory."
+
+- import_tasks: setup.yml
+- import_tasks: podman.yml
+
+- name: "Copy frontend assets for the web proxy to serve directly."
+  ansible.builtin.command:
+    cmd: "podman cp {{ peertube_name }}:/app/client/dist {{ peertube_root_path }}/assets"
+  changed_when: false

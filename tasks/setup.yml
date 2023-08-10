@@ -1,0 +1,17 @@
+---
+- name: Ensure writable data and config directories.
+  ansible.builtin.file:
+    path:  "{{ peertube_root_path }}/{{ item }}"
+    state: directory
+    mode: '0777'
+  loop:
+    - /config
+    - /storage
+    - /peertube-latest/client/dist
+
+- name: Configure PeerTube
+  ansible.builtin.template:
+    src: production.yaml
+    dest: "{{ peertube_root_path }}/config/production.yaml"
+    mode: '0600'
+  notify: restart peertube

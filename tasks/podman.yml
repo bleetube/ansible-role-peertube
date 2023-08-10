@@ -1,0 +1,33 @@
+---
+# https://github.com/Chocobozzz/PeerTube/blob/develop/support/docker/production/docker-compose.yml
+- name: Create container
+  containers.podman.podman_container:
+    image: "{{ peertube_image }}"
+    image_strict: yes
+    recreate: yes
+    state: present
+    name: "{{ peertube_name }}"
+    env: "{{ peertube_config }}"
+    volume: "{{ peertube_volumes }}"
+    ports: "{{ peertube_ports }}"
+  register: podman_output
+  notify: restart podman
+
+- ansible.builtin.debug:
+    var: podman_output
+
+- name: Generate systemd unit file for the container(s)
+  containers.podman.podman_generate_systemd:
+    name: peertube
+    dest: ~/.config/systemd/user/
+    restart_policy: on-failure
+    restart_sec: 30
+
+- name: Enable the container service
+  ansible.builtin.systemd:
+    name: container-wikijs
+    scope: user
+    daemon_reload: true
+    enabled: true
+    state: started
+# notify: Restart peertube
