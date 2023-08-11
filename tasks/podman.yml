@@ -6,12 +6,12 @@
     image_strict: yes
     recreate: yes
     state: present
-    name: "{{ peertube_name }}"
+    name: "{{ peertube_container_name }}"
     env: "{{ peertube_config }}"
     volume: "{{ peertube_volumes }}"
     ports: "{{ peertube_ports }}"
   register: podman_output
-  notify: restart podman
+  notify: restart peertube
 
 - ansible.builtin.debug:
     var: podman_output
@@ -22,12 +22,14 @@
     dest: ~/.config/systemd/user/
     restart_policy: on-failure
     restart_sec: 30
+  register: peertube_systemd
 
-- name: Enable the container service
+- name: Stop and restart the service so systemd can pick up the changes
   ansible.builtin.systemd:
-    name: container-wikijs
+    name: "container-{{ peertube_container_name }}"
     scope: user
     daemon_reload: true
     enabled: true
-    state: started
-# notify: Restart peertube
+    state: stopped
+  notify: restart peertube
+  when: peertube_systemd.changed

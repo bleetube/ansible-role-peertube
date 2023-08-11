@@ -1,20 +1,34 @@
 # Ansible Role: peertube
 
-This Ansible Role installs a rootless [peertube](https://joinpeertube.org/) container using Podman. It is intended to be composed with separate roles for other requirements.
+This Ansible Role deploys the [Peertube](https://joinpeertube.org/) Typescript code in a rootless container using Podman. It is intended to be composed with separate roles for the other Peertube requirements.
 
-In a nutshell, Peertube needs:
+Thus, besides its own code (which this role deploys) it also needs:
 
+* postgres + 2 extensions
 * https certificates
 * web proxy
-* node 16 (or containers)
 * redis
-* postfix
-* postgres + 2 extensions
+* mail server (optional)
+
+Tested on:
+
+* Ubuntu 22.04
 
 ## Requirements
 
 * [podman](docs/PODMAN.md)
 * [containers.podman](https://github.com/containers/ansible-podman-collections)
+
+Relevant parts of `requirements.yml`:
+
+  ```yaml
+  collections:
+    - name: containers.podman
+      src: https://github.com/containers/ansible-podman-collections
+  roles:
+    - src: https://github.com/alvistack/ansible-role-podman
+      name: alvistack.podman
+  ```
 
 ## Dependencies
 
@@ -23,7 +37,7 @@ In a nutshell, Peertube needs:
 
 ## Role Variables
 
-See the role [defaults](defaults/main.yml) and the peertube [environment variable](https://docs.requarks.io/install/docker) documentation. For a working example, see this [homelab stack](https://github.com/bleetube/satstack).
+See the role [defaults](defaults/main.yml). For a working example, see this [homelab stack](https://github.com/bleetube/satstack).
 
 ## Example Playbook
 
@@ -51,21 +65,18 @@ systemctl --user status container-peertube.service
 
 ## Upgrades
 
-Configure `peertube_version`.
+* Review the [development changelog](https://github.com/Chocobozzz/PeerTube/blob/develop/CHANGELOG.md) and mind any meaningful changes to [production.yml](https://github.com/Chocobozzz/PeerTube/blob/release/5.2.0/config/production.yaml.example)
+* Configure `peertube_version`.
 
 ```bash
 ansible-playbook playbooks/peertube.yml --tags peertube
 ```
 
-## Configuration notes
+## Notes
 
-The peertube 5.0.1 container reads some config from /config/production.yaml, and some config from environment variables. For posterity:
+The peertube 5.0.1 container would only read some config from `production.yaml`, and some config from environment variables. This is handled by the role, but for posterity:
 
-* smtp config must be in the environment variables
 * postgres config must be in production.yaml
 * redis config must be in production.yaml
+* smtp config must be in the environment variables
 * the peertube secret must be in the environment variables
-
-To update this role for newer Peertube versions:
-
-* Mind any changes to [production.yaml.example](https://github.com/Chocobozzz/PeerTube/blob/develop/config/production.yaml.example)

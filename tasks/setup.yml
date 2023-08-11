@@ -1,4 +1,13 @@
 ---
+- name: Ensure writable root path
+  ansible.builtin.file:
+    path:  "{{ peertube_root_path }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_facts.user_id }}"
+    group: "{{ ansible_facts.user_id }}"
+  become: yes
+
 - name: Ensure writable data and config directories.
   ansible.builtin.file:
     path:  "{{ peertube_root_path }}/{{ item }}"

@@ -4,7 +4,7 @@
     name: container-peertube
     scope: user
     state: restarted
-  register: systemd_result
-  until: systemd_result is succeeded
-  retries: 1
-  delay: 3
+# register: systemd_result
+# until: systemd_result is succeeded
+# retries: 1
+# delay: 3
