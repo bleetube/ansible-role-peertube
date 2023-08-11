@@ -17,5 +17,5 @@
 
 - name: "Copy frontend assets for the web proxy to serve directly."
   ansible.builtin.command:
-    cmd: "podman cp {{ peertube_name }}:/app/client/dist {{ peertube_root_path }}/assets"
+    cmd: "podman cp {{ peertube_name }}:/app/client/dist {{ peertube_root_path }}/peertube-latest/client/"
   changed_when: false

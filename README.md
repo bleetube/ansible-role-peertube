@@ -57,6 +57,15 @@ See the role [defaults](defaults/main.yml). For a working example, see this [hom
       become: true
 ```
 
+The container administrator password 
+grep password peertube.log
+
+"The [administrator username is root](https://github.com/Chocobozzz/PeerTube/blob/develop/support/doc/production.md#technologist-administrator)" and it's logged on first startup to `{{ peertube_root_path }}/storage/logs/peertube.log`. For example:
+
+```shell
+grep password /var/www/peertube/storage/logs/peertube.log
+```
+
 ## Systemd
 
 ```
